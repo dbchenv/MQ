@@ -39,94 +39,90 @@ datetime Onetime = 0;
 int start()
 {
 //----
-//   int H=TimeHour(TimeCurrent());
-//   if(H>=1 && H<=20){   
-      double MaxP,MixP,MaxTemp,MixTemp=2000;
-      double data[][6];
-      bool PriceOk;
-      ArrayCopyRates(data,"XAUUSD", PERIOD_M5);
-   //   Print("当前柱 ",TimeToStr(data[0][0]),"开盘价格", data[0][1],"--",data[0][2],"--",data[0][3]);
-      for(int i=0;i<=9;i++){
-         if(data[i][3]>MaxTemp){
-            MaxTemp = data[i][3];
-         }
-         if(data[i][2]<MixTemp){
-            MixTemp = data[i][2];
-         }
+
+   double MaxP,MixP,MaxTemp,MixTemp=2000;
+   double data[][6];
+   bool PriceOk;
+   ArrayCopyRates(data,"XAUUSD", PERIOD_M5);
+
+   for(int i=0;i<=9;i++){
+      if(data[i][3]>MaxTemp){
+         MaxTemp = data[i][3];
       }
-      if((MaxTemp-MixTemp)>=3){
-         PriceOk = true;
-      }else{
-         PriceOk = false;
+      if(data[i][2]<MixTemp){
+         MixTemp = data[i][2];
       }
-   
-      Print("最高价："+MaxTemp,"---最低价："+MixTemp,"---差价："+(MaxTemp-MixTemp));
-   
-      int ticket;
-      bool GoBuy,GoSell;
-      double G = iStochastic(NULL,0,5,3,3,MODE_SMA,0,MODE_MAIN,0);
-      double R = iStochastic(NULL,0,5,3,3,MODE_SMA,0,MODE_SIGNAL,0);
-      Print("绿线："+G+"  红线："+R);
-   
-      if(OrdersTotal() <= 1)
+   }
+   if((MaxTemp-MixTemp)>=3){
+      PriceOk = true;
+   }else{
+      PriceOk = false;
+   }
+
+   Print("最高价："+MaxTemp,"---最低价："+MixTemp,"---差价："+(MaxTemp-MixTemp));
+
+   int ticket;
+   bool GoBuy,GoSell;
+   double G = iStochastic(NULL,0,5,3,3,MODE_SMA,0,MODE_MAIN,0);
+   double R = iStochastic(NULL,0,5,3,3,MODE_SMA,0,MODE_SIGNAL,0);
+   Print("绿线："+G+"  红线："+R);
+
+   if(OrdersTotal() <= 1)
+   {
+      if(OrdersTotal() == 1)
       {
-         if(OrdersTotal() == 1)
+         if(OrderSelect(0, SELECT_BY_POS)==true)
          {
-            if(OrderSelect(0, SELECT_BY_POS)==true)
+            int CloseNum = OrderTicket();
+            double CloseLots = OrderLots();
+            
+            if(OrderType()==1)
             {
-               int CloseNum = OrderTicket();
-               double CloseLots = OrderLots();
-               
-               if(OrderType()==1)
-               {
-                  GoBuy = true; GoSell = false;              
-               }else{
-                  GoBuy = false; GoSell = true;
-               }
-            }
-         }else{
-             GoBuy = true; GoSell = true;
-         }
-      
-         if((G-R)>=4 && G <= 41 && GoBuy==true && PriceOk==true && Onetime != Time[0])
-         {
-            ticket=OrderSend(Symbol(),OP_BUY,Lots,Ask,3,Ask-StopLoss,Ask+15,"My order #2",16384,0,Green);
-            if(ticket<0){
-               Print("OrderSend 失败错误 #",GetLastError());
-               return(0);
+               GoBuy = true; GoSell = false;              
             }else{
-               if(CloseNum != 0 && GoSell==false){
-                  if(OrderClose(CloseNum,CloseLots,Ask,0.5,White)==true){
-                     Print("订单#"+CloseNum+" 已平仓! "+CloseLots);
-                  }else{
-                     Print("订单#"+CloseNum+" 平仓失败! "+CloseLots,"  OrderClose 失败错误 #"+GetLastError());
-                  }
-               }
+               GoBuy = false; GoSell = true;
             }
-            Onetime = Time[0];
          }
-         if((R-G)>=4 && R >= 59 && GoSell==true && PriceOk==true && Onetime != Time[0])
-         {
-            ticket=OrderSend(Symbol(),OP_SELL,Lots,Ask,3,Ask+StopLoss,Ask-15,"My order #2",16384,0,Red);
-            if(ticket<0){
-               Print("OrderSend 失败错误 #",GetLastError());
-               return(0);
-            }else{
-               if(CloseNum !=0 && GoBuy==false){
-                  if(OrderClose(CloseNum,CloseLots,Ask,0.5,White)==true){
-                     Print("订单#"+CloseNum+" 已平仓! "+CloseLots);
-                  }else{
-                     Print("订单#"+CloseNum+" 平仓失败! "+CloseLots,"  OrderClose 失败错误 #"+GetLastError());
-                  }
-               }
-            }
-            Onetime = Time[0];
-         }
+      }else{
+          GoBuy = true; GoSell = true;
       }
-//    }else{
-//       Print("交易时间为北京时间 8~20 点");
-       //Sleep(60000);
-//    }
+   
+      if((G-R)>=4 && G <= 41 && GoBuy==true && PriceOk==true && Onetime != Time[0])
+      {
+         ticket=OrderSend(Symbol(),OP_BUY,Lots,Ask,1,Ask-StopLoss,Ask+15,"My order #2",16384,0,Green);
+         if(ticket<0){
+            Print("OrderSend 失败错误 #",GetLastError());
+            return(0);
+         }else{
+            if(CloseNum != 0 && GoSell==false){
+               if(OrderClose(CloseNum,CloseLots,Ask,0.5,White)==true){
+                  Print("订单#"+CloseNum+" 已平仓! "+CloseLots);
+               }else{
+                  Print("订单#"+CloseNum+" 平仓失败! "+CloseLots,"  OrderClose 失败错误 #"+GetLastError());
+               }
+            }
+         }
+         Onetime = Time[0];
+      }
+      if((R-G)>=4 && R >= 59 && GoSell==true && PriceOk==true && Onetime != Time[0])
+      {
+         ticket=OrderSend(Symbol(),OP_SELL,Lots,Ask,1,Ask+StopLoss,Ask-15,"My order #2",16384,0,Red);
+         if(ticket<0){
+            Print("OrderSend 失败错误 #",GetLastError());
+            return(0);
+         }else{
+            if(CloseNum !=0 && GoBuy==false){
+               if(OrderClose(CloseNum,CloseLots,Ask,0.5,White)==true){
+                  Print("订单#"+CloseNum+" 已平仓! "+CloseLots);
+               }else{
+                  Print("订单#"+CloseNum+" 平仓失败! "+CloseLots,"  OrderClose 失败错误 #"+GetLastError());
+               }
+            }
+         }
+         Onetime = Time[0];
+      }
+   }
+
 //----
    return(0);
 }
