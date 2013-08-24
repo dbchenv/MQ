@@ -7,9 +7,9 @@
 #property link      "http://www.oiol.net"
 
 //--- input parameters
-extern double    Lots = 0.5;  //ÏÂµ¥ÊÖÊý
-extern double    StopLoss=5.0;
-extern double    TakeProfit=2.0;
+extern double    Lots = 0.1;  //ÏÂµ¥ÊÖÊý
+extern double    StopLoss=3;
+extern double    TakeProfit=1.2;
 //+------------------------------------------------------------------+
 //| expert initialization function                                   |
 //+------------------------------------------------------------------+
@@ -89,13 +89,13 @@ int start()
    
       if((G-R)>=4 && G <= 41 && GoBuy==true && PriceOk==true && Onetime != Time[0])
       {
-         ticket=OrderSend(Symbol(),OP_BUY,Lots,Ask,1,Ask-StopLoss,Ask+15,"My order #2",16384,0,Green);
+         ticket=OrderSend(Symbol(),OP_BUY,Lots,Ask,1,Ask-StopLoss,Ask+TakeProfit,"My order #2",16384,0,Green);
          if(ticket<0){
             Print("OrderSend Ê§°Ü´íÎó #",GetLastError());
             return(0);
          }else{
             if(CloseNum != 0 && GoSell==false){
-               if(OrderClose(CloseNum,CloseLots,Ask,0.5,White)==true){
+               if(OrderClose(CloseNum,CloseLots,Ask,1,White)==true){
                   Print("¶©µ¥#"+CloseNum+" ÒÑÆ½²Ö! "+CloseLots);
                }else{
                   Print("¶©µ¥#"+CloseNum+" Æ½²ÖÊ§°Ü! "+CloseLots,"  OrderClose Ê§°Ü´íÎó #"+GetLastError());
@@ -106,13 +106,13 @@ int start()
       }
       if((R-G)>=4 && R >= 59 && GoSell==true && PriceOk==true && Onetime != Time[0])
       {
-         ticket=OrderSend(Symbol(),OP_SELL,Lots,Ask,1,Ask+StopLoss,Ask-15,"My order #2",16384,0,Red);
+         ticket=OrderSend(Symbol(),OP_SELL,Lots,Ask,1,Ask+StopLoss,Ask-0.5-TakeProfit,"My order #2",16384,0,Red);
          if(ticket<0){
             Print("OrderSend Ê§°Ü´íÎó #",GetLastError());
             return(0);
          }else{
             if(CloseNum !=0 && GoBuy==false){
-               if(OrderClose(CloseNum,CloseLots,Ask,0.5,White)==true){
+               if(OrderClose(CloseNum,CloseLots,Ask,1,White)==true){
                   Print("¶©µ¥#"+CloseNum+" ÒÑÆ½²Ö! "+CloseLots);
                }else{
                   Print("¶©µ¥#"+CloseNum+" Æ½²ÖÊ§°Ü! "+CloseLots,"  OrderClose Ê§°Ü´íÎó #"+GetLastError());
