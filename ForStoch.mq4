@@ -93,14 +93,6 @@ int start()
          if(ticket<0){
             Print("OrderSend Ê§°Ü´íÎó #",GetLastError());
             return(0);
-         }else{
-            if(CloseNum != 0 && GoSell==false){
-               if(OrderClose(CloseNum,CloseLots,Ask,1,White)==true){
-                  Print("¶©µ¥#"+CloseNum+" ÒÑÆ½²Ö! "+CloseLots);
-               }else{
-                  Print("¶©µ¥#"+CloseNum+" Æ½²ÖÊ§°Ü! "+CloseLots,"  OrderClose Ê§°Ü´íÎó #"+GetLastError());
-               }
-            }
          }
          Onetime = Time[0];
       }
@@ -110,14 +102,6 @@ int start()
          if(ticket<0){
             Print("OrderSend Ê§°Ü´íÎó #",GetLastError());
             return(0);
-         }else{
-            if(CloseNum !=0 && GoBuy==false){
-               if(OrderClose(CloseNum,CloseLots,Ask,1,White)==true){
-                  Print("¶©µ¥#"+CloseNum+" ÒÑÆ½²Ö! "+CloseLots);
-               }else{
-                  Print("¶©µ¥#"+CloseNum+" Æ½²ÖÊ§°Ü! "+CloseLots,"  OrderClose Ê§°Ü´íÎó #"+GetLastError());
-               }
-            }
          }
          Onetime = Time[0];
       }
